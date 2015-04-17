@@ -14,8 +14,9 @@ float thickness(float x, float t, float c) {
 }
 void getAirfoilVeritcal(float* positions, const int slices, int width, int height) {
 	// number of slices determines the number of trapezoids to produces...
-	float t = 0.30;
-	float c = 1.0;
+	float t = 0.20;
+	float c = 1.0 * 0.80;
+	float factor = 1.0f * height / width;
 	float delx = c / ((float)slices);
 	float x = 0.0;
 	float* pPositions = &positions[0];
@@ -23,8 +24,8 @@ void getAirfoilVeritcal(float* positions, const int slices, int width, int heigh
 		float x0 = x;
 		float x1 = x0 + delx;
 
-		float yt0 = thickness(x0, t, c);
-		float yt1 = thickness(x1, t, c);
+		float yt0 = thickness(x0, t, c) * factor ;
+		float yt1 = thickness(x1, t, c) * factor;
 
 		//triangle 1
 		*pPositions++ = 0.0f;

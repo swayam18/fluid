@@ -35,7 +35,9 @@ void main()
 
     vec2 u = texture(VelocityTexture, InverseSize * fragCoord).xy;
     vec2 coord = InverseSize * (fragCoord - TimeStep * u);
+
     FragColor = Dissipation * texture(SourceTexture, coord);
+	
 }
 
 -- Jacobi
@@ -73,6 +75,7 @@ void main()
     if (oW.x > 0) pW = pC;
 
     vec4 bC = texelFetch(Divergence, T, 0);
+
     FragColor = (pW + pE + pS + pN + Alpha * bC) * InverseBeta;
 }
 
@@ -228,6 +231,6 @@ void main()
 
 	vec3 col = normalize(vec3(r,b,g));
 	
-	if (R * 0.06 < 0.3) R = (R*R*0.06);
+	
     FragColor = vec4(col, R*0.06);
 }

@@ -74,7 +74,6 @@ namespace
 		SwapSurfaces(&Velocity);
 
     
-
 		ComputeDivergence(Velocity.Ping, Obstacles, Divergence);
 		ClearSurface(Pressure.Ping, 0);
 

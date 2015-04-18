@@ -35,9 +35,9 @@ static const int NumJacobiIterations = 40;
 static const float TimeStep = 0.125f;
 static const float SmokeBuoyancy = 1.0f;
 static const float SmokeWeight = 0.05f;
-static const float GradientScale = 1.125f / CellSize;
+static const float GradientScale = 1.0f / CellSize;
 static const float TemperatureDissipation = 0.99f;
-static const float VelocityDissipation = 0.99f;
+static const float VelocityDissipation = 0.995f;
 static const float DensityDissipation = 0.9999f;
 static Vector2 ImpulsePosition = { GridWidth / 2, - (int) SplatRadius / 2 + 30};
 

@@ -32,7 +32,8 @@ uniform float Dissipation;
 void main()
 {
     vec2 fragCoord = gl_FragCoord.xy;
-    float solid = texture(Obstacles, InverseSize * fragCoord).x;
+
+	float solid = texture(Obstacles, InverseSize * fragCoord).x;
     if (solid > 0) {
         FragColor = vec4(0);
         return;
@@ -233,6 +234,6 @@ void main()
 
 	vec3 col = normalize(vec3(r,b,g));
 	
-	if (R * 0.06 < 0.4) R = (R*R*0.06);
+	if (R * 0.06 < 0.3) R = (R*R*0.06);
     FragColor = vec4(col, R*0.06);
 }

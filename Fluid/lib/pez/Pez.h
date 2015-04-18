@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-#include <glew.h>
+#include <glew.h>;
 
 #define TwoPi (6.28318531f)
 #define Pi (3.14159265f)

@@ -248,3 +248,72 @@ void main()
     FragColor = vec4(FillColor, L);
 }
 
+-- ComputeVorticity
+
+out float FragColor;
+
+uniform sampler2D Velocity;
+uniform sampler2D Obstacles;
+uniform float HalfInverseCellSize;
+
+void main()
+{
+    ivec2 T = ivec2(gl_FragCoord.xy);
+
+    // Find neighboring velocities:
+    vec2 vN = texelFetchOffset(Velocity, T, 0, ivec2(0, 1)).xy;
+    vec2 vS = texelFetchOffset(Velocity, T, 0, ivec2(0, -1)).xy;
+    vec2 vE = texelFetchOffset(Velocity, T, 0, ivec2(1, 0)).xy;
+    vec2 vW = texelFetchOffset(Velocity, T, 0, ivec2(-1, 0)).xy;
+
+    // Find neighboring obstacles:
+    vec3 oN = texelFetchOffset(Obstacles, T, 0, ivec2(0, 1)).xyz;
+    vec3 oS = texelFetchOffset(Obstacles, T, 0, ivec2(0, -1)).xyz;
+    vec3 oE = texelFetchOffset(Obstacles, T, 0, ivec2(1, 0)).xyz;
+    vec3 oW = texelFetchOffset(Obstacles, T, 0, ivec2(-1, 0)).xyz;
+
+    // Use obstacle velocities for solid cells:
+    if (oN.x > 0) vN = oN.yz;
+    if (oS.x > 0) vS = oS.yz;
+    if (oE.x > 0) vE = oE.yz;
+    if (oW.x > 0) vW = oW.yz;
+
+    FragColor = HalfInverseCellSize * ((vE.y - vW.y) - (vN.x - vS.x));
+}
+
+-- ComputeVortForce
+
+out vec2 FragColor;
+
+uniform sampler2D VorticityTexture;
+uniform sampler2D SourceTexture;
+uniform sampler2D Obstacles;
+
+uniform float HalfInverseCellSize;
+uniform float TimeStep;
+uniform vec2 dxscale; //Vorticity Confinement
+
+void main()
+{
+    ivec2 T = ivec2(gl_FragCoord.xy);
+
+	   // Find neighboring velocities:
+    float vN = texelFetchOffset(VorticityTexture, T, 0, ivec2(0, 1)).r;
+    float vS = texelFetchOffset(VorticityTexture, T, 0, ivec2(0, -1)).r;
+    float vE = texelFetchOffset(VorticityTexture, T, 0, ivec2(1, 0)).r;
+    float vW = texelFetchOffset(VorticityTexture, T, 0, ivec2(-1, 0)).r;
+	float vC = texelFetch(VorticityTexture, T, 0).r;
+
+	vec2 force = HalfInverseCellSize * vec2(abs(vN) - abs(vS), abs(vE) - abs(vW));
+
+	//safe normalize
+	float EPSILON = 0.00024414;
+	float magSqr = max(EPSILON, dot(force, force));
+	force = force * inversesqrt(magSqr);
+
+	force = force * dxscale * vC * vec2(1.0,-1.0);
+
+	vec2 V = texelFetch(SourceTexture, T, 0).xy;
+    FragColor = TimeStep * force + V;
+	
+}

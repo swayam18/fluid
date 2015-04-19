@@ -57,3 +57,5 @@ void SubtractGradient(Surface velocity, Surface pressure, Surface obstacles, Sur
 void ComputeDivergence(Surface velocity, Surface obstacles, Surface dest);
 void ApplyImpulse(Surface dest, Vector2 position, float value);
 void ApplyBuoyancy(Surface velocity, Surface temperature, Surface density, Surface dest);
+void ComputeVorticity(Surface velocity, Surface obstacles, Surface dest);
+void ComputeVortForce(Surface vorticity, Surface source, Surface obstacles, Surface dest);

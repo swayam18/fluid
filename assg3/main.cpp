@@ -22,7 +22,7 @@ namespace
 	static GLuint QuadVao;
 	static GLuint VisualizeProgram, VisualizeVProgram;
 	static Slab Velocity, Density, Pressure, Temperature;
-	static Surface Divergence, Obstacles, HiresObstacles;
+	static Surface Divergence, Obstacles, HiresObstacles, Vorticity;
 	GLfloat angle = 0.0f;
 	int height = 10;
 	int balls = 4;
@@ -146,10 +146,13 @@ namespace
 		ApplyImpulse(Temperature.Ping, ip3, ImpulseTemperature);
 		ApplyImpulse(Density.Ping, ip3, ImpulseDensity);
 		}
-		
+
 		ApplyBuoyancy(Velocity.Ping, Temperature.Ping, Density.Ping, Velocity.Pong);
 		SwapSurfaces(&Velocity);
 
+		ComputeVorticity(Velocity.Ping, Obstacles, Vorticity);
+		ComputeVortForce(Vorticity, Velocity.Ping, Obstacles, Velocity.Pong);
+		SwapSurfaces(&Velocity);
     
 		ComputeDivergence(Velocity.Ping, Obstacles, Divergence);
 		ClearSurface(Pressure.Ping, 0);
@@ -161,6 +164,8 @@ namespace
 
 		SubtractGradient(Velocity.Ping, Pressure.Ping, Obstacles, Velocity.Pong);
 		SwapSurfaces(&Velocity);
+
+		
 	}
 
 
@@ -174,6 +179,7 @@ namespace
 		Density = CreateSlab(w, h, 1);
 		Pressure = CreateSlab(w, h, 1);
 		Temperature = CreateSlab(w, h, 1);
+		Vorticity = CreateSurface(w, h, 1);
 		Divergence = CreateSurface(w, h, 3);
 		InitSlabOps();
 		VisualizeProgram = CreateProgram("Fluid.Vertex", 0, "Fluid.VisualizeObs");

@@ -9,6 +9,8 @@ struct ProgramsRec {
     GLuint ComputeDivergence;
     GLuint ApplyImpulse;
     GLuint ApplyBuoyancy;
+	GLuint CompVorticity;
+	GLuint ApplyVortForce;
 } Programs;
 
 static void ResetState()
@@ -28,6 +30,8 @@ void InitSlabOps()
     Programs.ComputeDivergence = CreateProgram("Fluid.Vertex", 0, "Fluid.ComputeDivergence");
     Programs.ApplyImpulse = CreateProgram("Fluid.Vertex", 0, "Fluid.Splat");
     Programs.ApplyBuoyancy = CreateProgram("Fluid.Vertex", 0, "Fluid.Buoyancy");
+	Programs.CompVorticity = CreateProgram("Fluid.Vertex", 0, "Fluid.ComputeVorticity");
+	Programs.ApplyVortForce = CreateProgram("Fluid.Vertex", 0, "Fluid.ComputeVortForce");
 }
 
 void SwapSurfaces(Slab* slab)
@@ -64,6 +68,53 @@ void Advect(Surface velocity, Surface source, Surface obstacles, Surface dest, f
     glBindFramebuffer(GL_FRAMEBUFFER, dest.FboHandle);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, velocity.TextureHandle);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, source.TextureHandle);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, obstacles.TextureHandle);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    ResetState();
+}
+
+void ComputeVorticity(Surface velocity, Surface obstacles, Surface dest)
+{
+    GLuint p = Programs.CompVorticity;
+    glUseProgram(p);
+
+    GLint halfCell = glGetUniformLocation(p, "HalfInverseCellSize");
+    glUniform1f(halfCell, 0.5f / CellSize);
+    GLint sampler = glGetUniformLocation(p, "Obstacles");
+    glUniform1i(sampler, 1);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, dest.FboHandle);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, velocity.TextureHandle);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, obstacles.TextureHandle);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    ResetState();
+}
+
+void ComputeVortForce(Surface vorticity, Surface source, Surface obstacles, Surface dest)
+{
+    GLuint p = Programs.ApplyVortForce;
+    glUseProgram(p);
+
+    GLint sourceTexture = glGetUniformLocation(p, "SourceTexture");
+    GLint obstaclesTexture = glGetUniformLocation(p, "Obstacles");
+    glUniform1i(sourceTexture, 1);
+    glUniform1i(obstaclesTexture, 2);
+
+	GLint halfCell = glGetUniformLocation(p, "HalfInverseCellSize");
+    glUniform1f(halfCell, 0.5f / CellSize);
+	GLint timeStep = glGetUniformLocation(p, "TimeStep");
+	glUniform1f(timeStep, TimeStep);
+	GLint VCS = glGetUniformLocation(p, "dxscale");
+	glUniform2f(VCS, 0.1f / CellSize, 0.1f / CellSize);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, dest.FboHandle);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, vorticity.TextureHandle);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, source.TextureHandle);
     glActiveTexture(GL_TEXTURE2);

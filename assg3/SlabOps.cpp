@@ -199,7 +199,7 @@ void ComputeDivergence(Surface velocity, Surface obstacles, Surface dest)
     ResetState();
 }
 
-void ApplyImpulse(Surface dest, Vector2 position, float value)
+void ApplyImpulse(Surface dest, Vector2 position, float value1, float value2, float value3)
 {
     GLuint p = Programs.ApplyImpulse;
     glUseProgram(p);
@@ -210,7 +210,7 @@ void ApplyImpulse(Surface dest, Vector2 position, float value)
 
     glUniform2f(pointLoc, (float) position.X, (float) position.Y);
     glUniform1f(radiusLoc, SplatRadius);
-    glUniform3f(fillColorLoc, value, value, value);
+    glUniform3f(fillColorLoc, value1, value2, value3);
 
     glBindFramebuffer(GL_FRAMEBUFFER, dest.FboHandle);
     glEnable(GL_BLEND);

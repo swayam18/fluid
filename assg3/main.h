@@ -26,7 +26,7 @@ typedef struct Vector2_ {
 #define ViewportHeight (800)
 #define GridWidth (ViewportWidth / 2)
 #define GridHeight (ViewportHeight / 2)
-#define SplatRadius ((float) 50.0f)
+#define SplatRadius ((float) 30.0f)
 
 static const float AmbientTemperature = 0.0f;
 static const float ImpulseTemperature = 10.0f;
@@ -55,7 +55,7 @@ void Advect(Surface velocity, Surface source, Surface obstacles, Surface dest, f
 void Jacobi(Surface pressure, Surface divergence, Surface obstacles, Surface dest);
 void SubtractGradient(Surface velocity, Surface pressure, Surface obstacles, Surface dest);
 void ComputeDivergence(Surface velocity, Surface obstacles, Surface dest);
-void ApplyImpulse(Surface dest, Vector2 position, float value);
+void ApplyImpulse(Surface dest, Vector2 position, float value1, float value2, float value3);
 void ApplyBuoyancy(Surface velocity, Surface temperature, Surface density, Surface dest);
 void ComputeVorticity(Surface velocity, Surface obstacles, Surface dest);
 void ComputeVortForce(Surface vorticity, Surface source, Surface obstacles, Surface dest);

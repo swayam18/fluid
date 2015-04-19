@@ -33,7 +33,12 @@ namespace
 	int w = GridWidth;
     int h = GridHeight;
 	int counter = 0;
-
+	bool SmokeMode = true;
+	bool MouseMode = false;
+	bool MouseDown = false;
+	int py = 0;
+	int px = 0;
+	int dx, dy;
 
   // initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
@@ -56,6 +61,7 @@ namespace
     void initRendering();
 	void mouseFunc(int button, int state, int x, int y);
     void motionFunc(int x, int y);
+	void PassiveMouseMotion(int x, int y);
 	void keyboardFunc(unsigned char key, int x, int y);
 	void drawSceneDensity(void);
 	void drawScenePressure(void);
@@ -78,7 +84,14 @@ namespace
 				counter = 0;
 			}
 			break;
-		
+
+		case 'r':
+			SmokeMode = !SmokeMode;
+			break;
+
+		case 'm':
+			MouseMode = !MouseMode;
+
 		default:
 			cout << "Unhandled key press " << key << "." << endl;        
 		}
@@ -87,36 +100,35 @@ namespace
 
 	void mouseFunc(int button, int state, int x, int y)
     {
-        if (state == GLUT_DOWN)
+        if ((state == GLUT_DOWN) && (button == GLUT_LEFT_BUTTON))
         { 
-            switch (button)
-            {
-            case GLUT_LEFT_BUTTON:
-             
-                break;
-            case GLUT_MIDDLE_BUTTON:
-          
-                break;
-            case GLUT_RIGHT_BUTTON:
-  
-            default:
-                break;
-            }                       
+           MouseDown = true;
         }
-        else
+        if ((state == GLUT_UP) && (button == GLUT_LEFT_BUTTON))
         {
-
+			MouseDown = false;
         }
     }
 
     // Called when mouse is moved while button pressed.
     void motionFunc(int x, int y)
     {
+		dx = x - px;
+		dy = y - py;
+
         ImpulsePosition.X = (x)/2;
 		ImpulsePosition.Y = (800-y)/2;
+
+		px = x;
+		py = y;
         //glutPostRedisplay();
     }
 
+	void PassiveMouseMotion( int x, int y)
+	{
+		px = x;
+		py = y;
+	}
     // Called when the window is resized
     // w, h - width and height of the window in pixels.
 
@@ -135,25 +147,37 @@ namespace
 		Advect(Velocity.Ping, Density.Ping, Obstacles, Density.Pong, DensityDissipation);
 		SwapSurfaces(&Density);
 
+		ApplyImpulse(Temperature.Ping, ImpulsePosition, ImpulseTemperature,ImpulseTemperature,ImpulseTemperature);
 		
-
-		ApplyImpulse(Temperature.Ping, ImpulsePosition, ImpulseTemperature);
-		ApplyImpulse(Density.Ping, ImpulsePosition, ImpulseDensity);
+		if (!SmokeMode) 
+		{
+			if (MouseMode)	
+			{
+				if (MouseDown) {ApplyImpulse(Velocity.Ping, ImpulsePosition, (float)dx*5.50, -(float)dy*5.50,0.0);
+				ApplyImpulse(Density.Ping, ImpulsePosition, ImpulseDensity,ImpulseDensity,ImpulseDensity);}
+			} else 
+			{
+					ApplyImpulse(Density.Ping, ImpulsePosition, ImpulseDensity,ImpulseDensity,ImpulseDensity);		
+					ApplyImpulse(Velocity.Ping, ImpulsePosition, 0.0,40.0,0.0);
+			}
+		} else ApplyImpulse(Density.Ping, ImpulsePosition, ImpulseDensity,ImpulseDensity,ImpulseDensity);
 
 		for (int i = 1; i < 1; i++){
-		Vector2 ip2 = { ImpulsePosition.X + 10.0 * i, ImpulsePosition.Y };
+		//Vector2 ip2 = { ImpulsePosition.X + 10.0 * i, ImpulsePosition.Y };
 		
-		ApplyImpulse(Temperature.Ping, ip2, ImpulseTemperature);
-		ApplyImpulse(Density.Ping, ip2, ImpulseDensity);
+		//ApplyImpulse(Temperature.Ping, ip2, ImpulseTemperature);
+		//ApplyImpulse(Density.Ping, ip2, ImpulseDensity);
 
-		Vector2 ip3 = { ImpulsePosition.X - 10.0 * i, ImpulsePosition.Y };
+		//Vector2 ip3 = { ImpulsePosition.X - 10.0 * i, ImpulsePosition.Y };
 
-		ApplyImpulse(Temperature.Ping, ip3, ImpulseTemperature);
-		ApplyImpulse(Density.Ping, ip3, ImpulseDensity);
+		//ApplyImpulse(Temperature.Ping, ip3, ImpulseTemperature,ImpulseTemperature,ImpulseTemperature);
+		//ApplyImpulse(Density.Ping, ip3, ImpulseDensity,ImpulseDensity,ImpulseDensity);
 		}
 
+		if (SmokeMode){
 		ApplyBuoyancy(Velocity.Ping, Temperature.Ping, Density.Ping, Velocity.Pong);
 		SwapSurfaces(&Velocity);
+		}
 
 		ComputeVorticity(Velocity.Ping, Obstacles, Vorticity);
 		ComputeVortForce(Vorticity, Velocity.Ping, Obstacles, Velocity.Pong);
@@ -244,7 +268,8 @@ namespace
 
 		// Draw ink:
 		glBindTexture(GL_TEXTURE_2D, Density.Ping.TextureHandle);
-		glUniform3f(fillColor, 1, 1, 0.9);
+		if (SmokeMode) glUniform3f(fillColor, 1, 1, 0.9);
+		else glUniform3f(fillColor, 0.8,0.8,1.0);
 		glUniform2f(scale, 1.0f / ViewportWidth, 1.0f / ViewportHeight);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
@@ -365,6 +390,7 @@ int main( int argc, char* argv[] )
     //// Set up callback functions for mouse
     glutMouseFunc(mouseFunc);
     glutMotionFunc(motionFunc);
+	glutPassiveMotionFunc( PassiveMouseMotion );
 
     //// Set up the callback function for resizing windows
     //glutReshapeFunc( reshapeFunc );

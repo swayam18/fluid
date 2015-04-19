@@ -16,6 +16,7 @@ public:
   float getMSliderValue();
   float getPSliderValue();
   float getTSliderValue();
+  void setAirfoilCallback( bool * cb);
   Fl_Double_Window *window;
   Fl_Value_Slider *DensitySlider;
   Fl_Value_Slider *mSlider;
@@ -33,6 +34,7 @@ private:
 
   inline void cb_tSlider_i(Fl_Value_Slider*, void*);
   static void cb_tSlider(Fl_Value_Slider*, void*);
+  bool * cb;
 public:
   void make_window();
 };

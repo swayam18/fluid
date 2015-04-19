@@ -36,6 +36,7 @@ namespace
 	bool SmokeMode = true;
 	bool MouseMode = false;
 	bool MouseDown = false;
+	bool airfoilChanged = false;
 	int py = 0;
 	int px = 0;
 	int dx, dy;
@@ -135,8 +136,26 @@ namespace
     // Initialize OpenGL's rendering modes
 	void update()
 	{
-		SmokeWeight = test->getSliderValue();
+		
 		glViewport(0, 0, GridWidth, GridHeight);
+
+		//if (test == NULL) return;
+		SmokeWeight = test->getSliderValue();
+
+		if (airfoilChanged) {
+			//Obstacles = CreateSurface(w, h, 3);
+			float m = test->getMSliderValue();
+			float p = test->getPSliderValue();
+			float t = test->getTSliderValue();
+			redrawAirfoil(Obstacles, w, h,m,p,t);
+
+			w = ViewportWidth * 2;
+			h = ViewportHeight * 2;
+			//HiresObstacles = CreateSurface(w, h, 1);
+			redrawAirfoil(HiresObstacles, w, h, m, p , t);
+
+			airfoilChanged = false;
+		}
 
 		Advect(Velocity.Ping, Velocity.Ping, Obstacles, Velocity.Pong, VelocityDissipation);
 		SwapSurfaces(&Velocity);
@@ -378,7 +397,8 @@ int main( int argc, char* argv[] )
     // Initialize OpenGL parameters.
     initRendering();
 
-	SliderInterface* test = new SliderInterface();
+	test = new SliderInterface();
+	test->setAirfoilCallback(&airfoilChanged);
 	test->make_window();
 
     // Setup particle system

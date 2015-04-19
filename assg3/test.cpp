@@ -8,6 +8,9 @@ static void UpdateSmoke(float f)
 	SmokeWeight = f;
 }
 
+void SliderInterface::setAirfoilCallback(bool * cb) {
+	this->cb = cb;
+}
 float SliderInterface::getMSliderValue() {
 	return mSlider->value();
 }
@@ -22,6 +25,7 @@ float SliderInterface::getTSliderValue() {
 
 void SliderInterface::cb_mSlider_i(Fl_Value_Slider*, void*) {
   //printf("%6.4lf", SmokeWeight);
+	*cb = true;
 }
 void SliderInterface::cb_mSlider(Fl_Value_Slider* o, void* v) {
   ((SliderInterface*)(o->parent()->parent()->user_data()))->cb_mSlider_i(o,v);
@@ -29,6 +33,7 @@ void SliderInterface::cb_mSlider(Fl_Value_Slider* o, void* v) {
 void SliderInterface::cb_tSlider_i(Fl_Value_Slider*, void*) {
   //UpdateSmoke(tSlider->value());
   //printf("%6.4lf", SmokeWeight);
+	*cb = true;
 }
 void SliderInterface::cb_tSlider(Fl_Value_Slider* o, void* v) {
   ((SliderInterface*)(o->parent()->parent()->user_data()))->cb_tSlider_i(o,v);
@@ -36,6 +41,7 @@ void SliderInterface::cb_tSlider(Fl_Value_Slider* o, void* v) {
 void SliderInterface::cb_pSlider_i(Fl_Value_Slider*, void*) {
   //UpdateSmoke(pSlider->value());
   //printf("%6.4lf", SmokeWeight);
+	*cb = true;
 }
 void SliderInterface::cb_pSlider(Fl_Value_Slider* o, void* v) {
   ((SliderInterface*)(o->parent()->parent()->user_data()))->cb_pSlider_i(o,v);

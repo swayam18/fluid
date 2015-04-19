@@ -48,7 +48,7 @@ GLuint CreateProgram(const char* vsKey, const char* gsKey, const char* fsKey);
 Surface CreateSurface(GLsizei width, GLsizei height, int numComponents);
 Slab CreateSlab(GLsizei width, GLsizei height, int numComponents);
 void CreateObstacles(Surface dest, int width, int height);
-void InitSlabOps();
+void InitSlabOps(float * sw);
 void SwapSurfaces(Slab* slab);
 void ClearSurface(Surface s, float value);
 void Advect(Surface velocity, Surface source, Surface obstacles, Surface dest, float dissipation);

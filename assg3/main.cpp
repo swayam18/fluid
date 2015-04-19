@@ -23,6 +23,7 @@ namespace
 	static GLuint VisualizeProgram, VisualizeVProgram;
 	static Slab Velocity, Density, Pressure, Temperature;
 	static Surface Divergence, Obstacles, HiresObstacles;
+	SliderInterface* test;
 	GLfloat angle = 0.0f;
 	int height = 10;
 	int balls = 4;
@@ -30,6 +31,7 @@ namespace
 	int w = GridWidth;
     int h = GridHeight;
 	int counter = 0;
+
 
   // initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
@@ -119,6 +121,7 @@ namespace
     // Initialize OpenGL's rendering modes
 	void update()
 	{
+		SmokeWeight = test->getSliderValue();
 		glViewport(0, 0, GridWidth, GridHeight);
 
 		Advect(Velocity.Ping, Velocity.Ping, Obstacles, Velocity.Pong, VelocityDissipation);
@@ -175,7 +178,7 @@ namespace
 		Pressure = CreateSlab(w, h, 1);
 		Temperature = CreateSlab(w, h, 1);
 		Divergence = CreateSurface(w, h, 3);
-		InitSlabOps();
+		InitSlabOps(&SmokeWeight);
 		VisualizeProgram = CreateProgram("Fluid.Vertex", 0, "Fluid.VisualizeObs");
 		VisualizeVProgram = CreateProgram("Fluid.Vertex", 0, "Fluid.Visualize");
 

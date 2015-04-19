@@ -10,7 +10,7 @@ static void UpdateSmoke(float f)
 
 void SliderInterface::cb_DensitySlider_i(Fl_Value_Slider*, void*) {
   UpdateSmoke(DensitySlider->value());
-  printf("%6.4lf", SmokeWeight);
+  //printf("%6.4lf", SmokeWeight);
 }
 void SliderInterface::cb_DensitySlider(Fl_Value_Slider* o, void* v) {
   ((SliderInterface*)(o->parent()->parent()->user_data()))->cb_DensitySlider_i(o,v);
@@ -25,7 +25,7 @@ SliderInterface::SliderInterface() {
       { DensitySlider = new Fl_Value_Slider(90, 40, 285, 25, "Density");
         DensitySlider->type(1);
         DensitySlider->minimum(0.01);
-        DensitySlider->maximum(0.2);
+        DensitySlider->maximum(20);
         DensitySlider->value(0.05);
         DensitySlider->slider_size(0.161616);
         DensitySlider->callback((Fl_Callback*)cb_DensitySlider);
@@ -36,6 +36,10 @@ SliderInterface::SliderInterface() {
     } // Fl_Group* o
     window->end();
   } // Fl_Double_Window* window
+}
+
+float SliderInterface::getSliderValue() {
+	return SmokeWeight;
 }
 
 void SliderInterface::make_window() {

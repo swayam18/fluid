@@ -11,6 +11,7 @@
 class SliderInterface {
 public:
   SliderInterface();
+  float getSliderValue();
   Fl_Double_Window *window;
   Fl_Value_Slider *DensitySlider;
 private:

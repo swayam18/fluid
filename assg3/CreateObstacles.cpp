@@ -74,44 +74,44 @@ void getAssymetricAirfoil(float* positions, const int slices, int width, int hei
 		float yl1 = yc1 - yt1 * cos(theta1) * factor;
 		///triangle 1
 
-		*pPositions++ = yc0;
 		*pPositions++ = x0;
+		*pPositions++ = yc0;
 
-		*pPositions++ = yu0;
 		*pPositions++ = xu0;
+		*pPositions++ = yu0;
 		
-		*pPositions++ = yc1;
 		*pPositions++ = x1;
+		*pPositions++ = yc1;
 
 		//triangle 2
-		*pPositions++ = yc1;
 		*pPositions++ = x1;
+		*pPositions++ = yc1;
 
-		*pPositions++ = yu1;
 		*pPositions++ = xu1;
+		*pPositions++ = yu1;
 
-		*pPositions++ = yu0;
 		*pPositions++ = xu0;
+		*pPositions++ = yu0;
 
 		//triangle 3
-		*pPositions++ = yc0;
 		*pPositions++ = x0;
+		*pPositions++ = yc0;
 
-		*pPositions++ = yl0;
 		*pPositions++ = xl0;
+		*pPositions++ = yl0;
 		
-		*pPositions++ = yc1;
 		*pPositions++ = x1;
+		*pPositions++ = yc1;
 
 		//triangle 4
-		*pPositions++ = yc0;
 		*pPositions++ = x1;
+		*pPositions++ = yc0;
 
-		*pPositions++ = yl1;
 		*pPositions++ = xl1;
+		*pPositions++ = yl1;
 
-		*pPositions++ = yl0;
 		*pPositions++ = xl0;
+		*pPositions++ = yl0;
 
 		x = x1;
 	}

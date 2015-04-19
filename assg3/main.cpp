@@ -22,7 +22,10 @@ namespace
 	static GLuint QuadVao;
 	static GLuint VisualizeProgram, VisualizeVProgram;
 	static Slab Velocity, Density, Pressure, Temperature;
+
 	static Surface Divergence, Obstacles, HiresObstacles, Vorticity;
+	SliderInterface* test;
+
 	GLfloat angle = 0.0f;
 	int height = 10;
 	int balls = 4;
@@ -30,6 +33,7 @@ namespace
 	int w = GridWidth;
     int h = GridHeight;
 	int counter = 0;
+
 
   // initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
@@ -119,6 +123,7 @@ namespace
     // Initialize OpenGL's rendering modes
 	void update()
 	{
+		SmokeWeight = test->getSliderValue();
 		glViewport(0, 0, GridWidth, GridHeight);
 
 		Advect(Velocity.Ping, Velocity.Ping, Obstacles, Velocity.Pong, VelocityDissipation);
@@ -181,17 +186,20 @@ namespace
 		Temperature = CreateSlab(w, h, 1);
 		Vorticity = CreateSurface(w, h, 1);
 		Divergence = CreateSurface(w, h, 3);
-		InitSlabOps();
+		InitSlabOps(&SmokeWeight);
 		VisualizeProgram = CreateProgram("Fluid.Vertex", 0, "Fluid.VisualizeObs");
 		VisualizeVProgram = CreateProgram("Fluid.Vertex", 0, "Fluid.Visualize");
 
 		Obstacles = CreateSurface(w, h, 3);
-		CreateObstacles(Obstacles, w, h);
+		float m = 6; //test->getMSliderValue();
+		float p = 7; //test->getPSliderValue();
+		float t = 21;//test->getTSliderValue();
+		CreateObstacles(Obstacles, w, h,m,p,t);
 
 		w = ViewportWidth * 2;
 		h = ViewportHeight * 2;
 		HiresObstacles = CreateSurface(w, h, 1);
-		CreateObstacles(HiresObstacles, w, h);
+		CreateObstacles(HiresObstacles, w, h, m, p , t);
 
 		QuadVao = CreateQuad();
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

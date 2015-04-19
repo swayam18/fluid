@@ -13,6 +13,10 @@ struct ProgramsRec {
 	GLuint ApplyVortForce;
 } Programs;
 
+struct FluidProperties {
+	float * SmokeWeight;
+} FluidProperties;
+
 static void ResetState()
 {
     glActiveTexture(GL_TEXTURE2); glBindTexture(GL_TEXTURE_2D, 0);
@@ -22,7 +26,7 @@ static void ResetState()
     glDisable(GL_BLEND);
 }
 
-void InitSlabOps()
+void InitSlabOps(float * SmokeWeight)
 {
     Programs.Advect = CreateProgram("Fluid.Vertex", 0, "Fluid.Advect");
     Programs.Jacobi = CreateProgram("Fluid.Vertex", 0, "Fluid.Jacobi");
@@ -32,6 +36,8 @@ void InitSlabOps()
     Programs.ApplyBuoyancy = CreateProgram("Fluid.Vertex", 0, "Fluid.Buoyancy");
 	Programs.CompVorticity = CreateProgram("Fluid.Vertex", 0, "Fluid.ComputeVorticity");
 	Programs.ApplyVortForce = CreateProgram("Fluid.Vertex", 0, "Fluid.ComputeVortForce");
+
+	FluidProperties.SmokeWeight = SmokeWeight;
 }
 
 void SwapSurfaces(Slab* slab)
@@ -212,8 +218,9 @@ void ApplyImpulse(Surface dest, Vector2 position, float value)
     ResetState();
 }
 
-void ApplyBuoyancy(Surface velocity, Surface temperature, Surface density, Surface dest)
+ void ApplyBuoyancy(Surface velocity, Surface temperature, Surface density, Surface dest)
 {
+	
     GLuint p = Programs.ApplyBuoyancy;
     glUseProgram(p);
 
@@ -229,8 +236,8 @@ void ApplyBuoyancy(Surface velocity, Surface temperature, Surface density, Surfa
     glUniform1f(ambTemp, AmbientTemperature);
     glUniform1f(timeStep, TimeStep);
     glUniform1f(sigma, SmokeBuoyancy);
-    glUniform1f(kappa, SmokeWeight);
-	//printf("%6.4lf", SmokeWeight);
+    glUniform1f(kappa, *FluidProperties.SmokeWeight);
+	//printf("%6.4lf", sq);
 
     glBindFramebuffer(GL_FRAMEBUFFER, dest.FboHandle);
     glActiveTexture(GL_TEXTURE0);

@@ -8,13 +8,47 @@ static void UpdateSmoke(float f)
 	SmokeWeight = f;
 }
 
+float SliderInterface::getMSliderValue() {
+	return mSlider->value();
+}
+
+float SliderInterface::getPSliderValue() {
+	return pSlider->value();
+}
+
+float SliderInterface::getTSliderValue() {
+	return tSlider->value();
+}
+
+void SliderInterface::cb_mSlider_i(Fl_Value_Slider*, void*) {
+  //printf("%6.4lf", SmokeWeight);
+}
+void SliderInterface::cb_mSlider(Fl_Value_Slider* o, void* v) {
+  ((SliderInterface*)(o->parent()->parent()->user_data()))->cb_mSlider_i(o,v);
+}
+void SliderInterface::cb_tSlider_i(Fl_Value_Slider*, void*) {
+  //UpdateSmoke(tSlider->value());
+  //printf("%6.4lf", SmokeWeight);
+}
+void SliderInterface::cb_tSlider(Fl_Value_Slider* o, void* v) {
+  ((SliderInterface*)(o->parent()->parent()->user_data()))->cb_tSlider_i(o,v);
+}
+void SliderInterface::cb_pSlider_i(Fl_Value_Slider*, void*) {
+  //UpdateSmoke(pSlider->value());
+  //printf("%6.4lf", SmokeWeight);
+}
+void SliderInterface::cb_pSlider(Fl_Value_Slider* o, void* v) {
+  ((SliderInterface*)(o->parent()->parent()->user_data()))->cb_pSlider_i(o,v);
+}
+
 void SliderInterface::cb_DensitySlider_i(Fl_Value_Slider*, void*) {
-  UpdateSmoke(DensitySlider->value());
-  printf("%6.4lf", SmokeWeight);
+  //UpdateSmoke(DensitySlider->value());
+  //printf("%6.4lf", SmokeWeight);
 }
 void SliderInterface::cb_DensitySlider(Fl_Value_Slider* o, void* v) {
   ((SliderInterface*)(o->parent()->parent()->user_data()))->cb_DensitySlider_i(o,v);
 }
+
 
 SliderInterface::SliderInterface() {
   { window = new Fl_Double_Window(408, 365, "window");
@@ -25,17 +59,52 @@ SliderInterface::SliderInterface() {
       { DensitySlider = new Fl_Value_Slider(90, 40, 285, 25, "Density");
         DensitySlider->type(1);
         DensitySlider->minimum(0.01);
-        DensitySlider->maximum(0.2);
+        DensitySlider->maximum(20);
         DensitySlider->value(0.05);
         DensitySlider->slider_size(0.161616);
         DensitySlider->callback((Fl_Callback*)cb_DensitySlider);
         DensitySlider->align(Fl_Align(FL_ALIGN_LEFT));
         DensitySlider->when(FL_WHEN_RELEASE);
       } // Fl_Value_Slider* DensitySlider
+      { mSlider = new Fl_Value_Slider(90, 80, 285, 25, "m");
+        mSlider->type(1);
+        mSlider->minimum(0.00);
+        mSlider->maximum(9.0);
+        mSlider->value(6.0);
+        mSlider->slider_size(0.161616);
+        mSlider->callback((Fl_Callback*)cb_mSlider);
+        mSlider->align(Fl_Align(FL_ALIGN_LEFT));
+        mSlider->when(FL_WHEN_RELEASE);
+      } // Fl_Value_Slider* mSlider
+      { pSlider = new Fl_Value_Slider(90, 120, 285, 25, "p");
+        pSlider->type(1);
+        pSlider->minimum(0.00);
+        pSlider->maximum(9.0);
+        pSlider->value(7.0);
+        pSlider->slider_size(0.161616);
+        pSlider->callback((Fl_Callback*)cb_pSlider);
+        pSlider->align(Fl_Align(FL_ALIGN_LEFT));
+        pSlider->when(FL_WHEN_RELEASE);
+      } // Fl_Value_Slider* pSlider
+      { tSlider = new Fl_Value_Slider(90, 160, 285, 25, "t");
+        tSlider->type(1);
+        tSlider->minimum(1.0);
+        tSlider->maximum(40.0);
+        tSlider->value(21);
+        tSlider->slider_size(0.161616);
+        tSlider->callback((Fl_Callback*)cb_tSlider);
+        tSlider->align(Fl_Align(FL_ALIGN_LEFT));
+        tSlider->when(FL_WHEN_RELEASE);
+      } // Fl_Value_Slider* tSlider
+
       o->end();
     } // Fl_Group* o
     window->end();
   } // Fl_Double_Window* window
+}
+
+float SliderInterface::getSliderValue() {
+	return SmokeWeight;
 }
 
 void SliderInterface::make_window() {

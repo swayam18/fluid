@@ -36,18 +36,13 @@ float camber(float m, float p, float c, float x)  {
 	return yc;
 }
 
-void getAssymetricAirfoil(float* positions, const int slices, int width, int height) {
-	// NACA 4412 
-	//float m = 0.04;
-	//float p = 0.4;
-	//float t = 0.12;
-
-	// NACA 6721
-	float m = 0.06;
-	float p = 0.7;
-	float t = 0.21;
+void getAssymetricAirfoil(float* positions, const int slices, int width, int height, float m, float p, float t) {
+	m = m / 100.0f;
+	p = p / 10.0f;
+	t = t / 100.0f;
 
 	float c = 0.8;
+
 	float factor = 1.0f * height / width;
 	float delx = c / ((float)slices);
 	float x = 0.0;
@@ -259,7 +254,7 @@ void getCircle(float* positions, const int slices) {
 	}
 }
 
-void CreateObstacles(Surface dest, int width, int height)
+void CreateObstacles(Surface dest, int width, int height, float m, float p, float t)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, dest.FboHandle);
     glViewport(0, 0, width, height);
@@ -293,7 +288,7 @@ void CreateObstacles(Surface dest, int width, int height)
     if (DrawCircle) {
         const int slices = 64;
         float positions[slices*2*3*4];
-		getAssymetricAirfoil(positions, slices, width, height);
+		getAssymetricAirfoil(positions, slices, width, height, m, p ,t);
         GLuint vbo;
         GLsizeiptr size = sizeof(positions);
         glGenBuffers(1, &vbo);

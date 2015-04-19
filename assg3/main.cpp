@@ -183,12 +183,15 @@ namespace
 		VisualizeVProgram = CreateProgram("Fluid.Vertex", 0, "Fluid.Visualize");
 
 		Obstacles = CreateSurface(w, h, 3);
-		CreateObstacles(Obstacles, w, h);
+		float m = 6; //test->getMSliderValue();
+		float p = 7; //test->getPSliderValue();
+		float t = 21;//test->getTSliderValue();
+		CreateObstacles(Obstacles, w, h,m,p,t);
 
 		w = ViewportWidth * 2;
 		h = ViewportHeight * 2;
 		HiresObstacles = CreateSurface(w, h, 1);
-		CreateObstacles(HiresObstacles, w, h);
+		CreateObstacles(HiresObstacles, w, h, m, p , t);
 
 		QuadVao = CreateQuad();
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

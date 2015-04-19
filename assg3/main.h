@@ -47,7 +47,7 @@ GLuint CreateQuad();
 GLuint CreateProgram(const char* vsKey, const char* gsKey, const char* fsKey);
 Surface CreateSurface(GLsizei width, GLsizei height, int numComponents);
 Slab CreateSlab(GLsizei width, GLsizei height, int numComponents);
-void CreateObstacles(Surface dest, int width, int height);
+void CreateObstacles(Surface dest, int width, int height, float m, float p, float t);
 void InitSlabOps(float * sw);
 void SwapSurfaces(Slab* slab);
 void ClearSurface(Surface s, float value);

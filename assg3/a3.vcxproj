@@ -83,6 +83,7 @@
     <ClCompile Include="lib\glsw\glsw.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SlabOps.cpp" />
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClothSystem.h" />
@@ -92,11 +93,21 @@
     <ClInclude Include="lib\glew\wglew.h" />
     <ClInclude Include="lib\glsw\bstrlib.h" />
     <ClInclude Include="lib\glsw\glsw.h" />
+    <ClInclude Include="test.h" />
     <ClInclude Include="vecmath\include\Quat4f.h" />
     <ClInclude Include="vecmath\include\vecmath.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Fluid.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\fltkd.lib" />
+    <Library Include="lib\fltkformsd.lib" />
+    <Library Include="lib\fltkgld.lib" />
+    <Library Include="lib\fltkimagesd.lib" />
+    <Library Include="lib\fltkjpegd.lib" />
+    <Library Include="lib\fltkpngd.lib" />
+    <Library Include="lib\fltkzlibd.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

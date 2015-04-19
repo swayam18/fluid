@@ -1,5 +1,6 @@
 #include "main.h"
 #include <math.h>
+#include <stdio.h>
 
 struct ProgramsRec {
     GLuint Advect;
@@ -178,6 +179,7 @@ void ApplyBuoyancy(Surface velocity, Surface temperature, Surface density, Surfa
     glUniform1f(timeStep, TimeStep);
     glUniform1f(sigma, SmokeBuoyancy);
     glUniform1f(kappa, SmokeWeight);
+	printf("%6.4lf", SmokeWeight);
 
     glBindFramebuffer(GL_FRAMEBUFFER, dest.FboHandle);
     glActiveTexture(GL_TEXTURE0);

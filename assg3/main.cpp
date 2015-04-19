@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include "main.h"
+#include "test.h"
 
 ///TODO: include more headers if necessary
 
@@ -49,6 +49,40 @@ namespace
     void drawScene(void);
 	void update();
     void initRendering();
+	void mouseFunc(int button, int state, int x, int y);
+    void motionFunc(int x, int y);
+
+	void mouseFunc(int button, int state, int x, int y)
+    {
+        if (state == GLUT_DOWN)
+        { 
+            switch (button)
+            {
+            case GLUT_LEFT_BUTTON:
+             
+                break;
+            case GLUT_MIDDLE_BUTTON:
+          
+                break;
+            case GLUT_RIGHT_BUTTON:
+  
+            default:
+                break;
+            }                       
+        }
+        else
+        {
+
+        }
+    }
+
+    // Called when mouse is moved while button pressed.
+    void motionFunc(int x, int y)
+    {
+        ImpulsePosition.X = (x)/2;
+		ImpulsePosition.Y = (800-y)/2;
+        //glutPostRedisplay();
+    }
 
     // Called when the window is resized
     // w, h - width and height of the window in pixels.
@@ -179,6 +213,9 @@ int main( int argc, char* argv[] )
     // Initialize OpenGL parameters.
     initRendering();
 
+	SliderInterface* test = new SliderInterface();
+	test->make_window();
+
     // Setup particle system
 
     // Set up callback functions for key presses
@@ -186,8 +223,8 @@ int main( int argc, char* argv[] )
     //glutSpecialFunc(specialFunc);   // Handles "special" keyboard keys
 
     //// Set up callback functions for mouse
-    //glutMouseFunc(mouseFunc);
-    //glutMotionFunc(motionFunc);
+    glutMouseFunc(mouseFunc);
+    glutMotionFunc(motionFunc);
 
     //// Set up the callback function for resizing windows
     //glutReshapeFunc( reshapeFunc );

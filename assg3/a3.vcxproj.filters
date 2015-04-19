@@ -45,6 +45,9 @@
     <ClCompile Include="SlabOps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClothSystem.h">
@@ -74,10 +77,22 @@
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Fluid.glsl">
       <Filter>Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\fltkd.lib" />
+    <Library Include="lib\fltkzlibd.lib" />
+    <Library Include="lib\fltkformsd.lib" />
+    <Library Include="lib\fltkgld.lib" />
+    <Library Include="lib\fltkimagesd.lib" />
+    <Library Include="lib\fltkjpegd.lib" />
+    <Library Include="lib\fltkpngd.lib" />
   </ItemGroup>
 </Project>

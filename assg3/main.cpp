@@ -20,7 +20,7 @@ using namespace std;
 namespace
 {
 	static GLuint QuadVao;
-	static GLuint VisualizeProgram;
+	static GLuint VisualizeProgram, VisualizeVProgram;
 	static Slab Velocity, Density, Pressure, Temperature;
 	static Surface Divergence, Obstacles, HiresObstacles;
 	GLfloat angle = 0.0f;
@@ -29,6 +29,7 @@ namespace
 	bool ball = true;
 	int w = GridWidth;
     int h = GridHeight;
+	int counter = 0;
 
   // initialize your particle systems
   ///TODO: read argv here. set timestepper , step size etc
@@ -51,6 +52,34 @@ namespace
     void initRendering();
 	void mouseFunc(int button, int state, int x, int y);
     void motionFunc(int x, int y);
+	void keyboardFunc(unsigned char key, int x, int y);
+	void drawSceneDensity(void);
+	void drawScenePressure(void);
+	void drawSceneVelocity(void);
+
+	// This function is called whenever a "Normal" key press is received.
+	void keyboardFunc( unsigned char key, int x, int y )
+	{
+		switch ( key )
+		{
+		case 27: // Escape key
+			exit(0);
+			break;
+
+		case 't':
+			counter += 1;
+
+			if (counter > 2)
+			{
+				counter = 0;
+			}
+			break;
+		
+		default:
+			cout << "Unhandled key press " << key << "." << endl;        
+		}
+
+	}
 
 	void mouseFunc(int button, int state, int x, int y)
     {
@@ -101,9 +130,23 @@ namespace
 		Advect(Velocity.Ping, Density.Ping, Obstacles, Density.Pong, DensityDissipation);
 		SwapSurfaces(&Density);
 
+		
+
 		ApplyImpulse(Temperature.Ping, ImpulsePosition, ImpulseTemperature);
 		ApplyImpulse(Density.Ping, ImpulsePosition, ImpulseDensity);
 
+		for (int i = 1; i < 1; i++){
+		Vector2 ip2 = { ImpulsePosition.X + 10.0 * i, ImpulsePosition.Y };
+		
+		ApplyImpulse(Temperature.Ping, ip2, ImpulseTemperature);
+		ApplyImpulse(Density.Ping, ip2, ImpulseDensity);
+
+		Vector2 ip3 = { ImpulsePosition.X - 10.0 * i, ImpulsePosition.Y };
+
+		ApplyImpulse(Temperature.Ping, ip3, ImpulseTemperature);
+		ApplyImpulse(Density.Ping, ip3, ImpulseDensity);
+		}
+		
 		ApplyBuoyancy(Velocity.Ping, Temperature.Ping, Density.Ping, Velocity.Pong);
 		SwapSurfaces(&Velocity);
 
@@ -133,7 +176,8 @@ namespace
 		Temperature = CreateSlab(w, h, 1);
 		Divergence = CreateSurface(w, h, 3);
 		InitSlabOps();
-		VisualizeProgram = CreateProgram("Fluid.Vertex", 0, "Fluid.Visualize");
+		VisualizeProgram = CreateProgram("Fluid.Vertex", 0, "Fluid.VisualizeObs");
+		VisualizeVProgram = CreateProgram("Fluid.Vertex", 0, "Fluid.Visualize");
 
 		Obstacles = CreateSurface(w, h, 3);
 		CreateObstacles(Obstacles, w, h);
@@ -152,6 +196,27 @@ namespace
     // This function is responsible for displaying the object.
     void drawScene(void)
     {
+		switch ( counter )
+		{
+		case 0: // Escape key
+			drawSceneDensity();
+			break;
+
+		case 1:
+			drawScenePressure();
+			break;
+		
+		case 2:
+			drawSceneVelocity();
+			break;
+
+		default:
+			break;     
+		}
+		
+    }
+
+	void drawSceneDensity(){
 		glUseProgram(VisualizeProgram);
 		GLint fillColor = glGetUniformLocation(VisualizeProgram, "FillColor");
 		GLint scale = glGetUniformLocation(VisualizeProgram, "Scale");
@@ -164,21 +229,82 @@ namespace
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Draw ink:
-		glBindTexture(GL_TEXTURE_2D, Velocity.Ping.TextureHandle);
-		glUniform3f(fillColor, 1, 0, 0);
+		glBindTexture(GL_TEXTURE_2D, Density.Ping.TextureHandle);
+		glUniform3f(fillColor, 1, 1, 0.9);
 		glUniform2f(scale, 1.0f / ViewportWidth, 1.0f / ViewportHeight);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
 		// Draw obstacles:
-		//glBindTexture(GL_TEXTURE_2D, HiresObstacles.TextureHandle);
-		//glUniform3f(fillColor, 0.125f, 0.4f, 0.75f);
-		//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glBindTexture(GL_TEXTURE_2D, HiresObstacles.TextureHandle);
+		glUniform3f(fillColor, 0.125f, 0.4f, 0.75f);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
 		// Disable blending:
 		glDisable(GL_BLEND);
         // Dump the image to the screen.
         glutSwapBuffers();
-    }
+
+	}
+
+	void drawScenePressure(){
+		glUseProgram(VisualizeProgram);
+		GLint fillColor = glGetUniformLocation(VisualizeProgram, "FillColor");
+		GLint scale = glGetUniformLocation(VisualizeProgram, "Scale");
+		glEnable(GL_BLEND);
+
+		// Set render target to the backbuffer:
+		glViewport(0, 0, ViewportWidth, ViewportHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Draw ink:
+		glBindTexture(GL_TEXTURE_2D, Pressure.Ping.TextureHandle);
+		glUniform3f(fillColor, 0.75, 0.8, 0.9);
+		glUniform2f(scale, 1.0f / ViewportWidth, 1.0f / ViewportHeight);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+		// Draw obstacles:
+		glBindTexture(GL_TEXTURE_2D, HiresObstacles.TextureHandle);
+		glUniform3f(fillColor, 0.125f, 0.4f, 0.75f);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+		// Disable blending:
+		glDisable(GL_BLEND);
+        // Dump the image to the screen.
+        glutSwapBuffers();
+
+	}
+
+	void drawSceneVelocity(){
+		glUseProgram(VisualizeVProgram);
+		GLint fillColor = glGetUniformLocation(VisualizeProgram, "FillColor");
+		GLint scale = glGetUniformLocation(VisualizeProgram, "Scale");
+		glEnable(GL_BLEND);
+
+		// Set render target to the backbuffer:
+		glViewport(0, 0, ViewportWidth, ViewportHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Draw ink:
+		glBindTexture(GL_TEXTURE_2D, Velocity.Ping.TextureHandle);
+		glUniform3f(fillColor, 0.0, 0.0, 0.0);
+		glUniform2f(scale, 1.0f / ViewportWidth, 1.0f / ViewportHeight);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+		// Draw obstacles:
+		glBindTexture(GL_TEXTURE_2D, HiresObstacles.TextureHandle);
+		glUniform3f(fillColor, 0.825f, 0.9f, 0.75f);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+		// Disable blending:
+		glDisable(GL_BLEND);
+        // Dump the image to the screen.
+        glutSwapBuffers();
+
+	}
 
     void timerFunc(int t)
 	{
@@ -219,7 +345,7 @@ int main( int argc, char* argv[] )
     // Setup particle system
 
     // Set up callback functions for key presses
-    //glutKeyboardFunc(keyboardFunc); // Handles "normal" ascii symbols
+    glutKeyboardFunc(keyboardFunc); // Handles "normal" ascii symbols
     //glutSpecialFunc(specialFunc);   // Handles "special" keyboard keys
 
     //// Set up callback functions for mouse

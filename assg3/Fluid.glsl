@@ -230,7 +230,21 @@ void main()
     float b   = (1.73205-length(vec-vecB))/1.73205;
 
 	vec3 col = normalize(vec3(r,b,g));
-	
-	
-    FragColor = vec4(col, R*0.06);
+
+	if (FillColor.r == 0.0) FragColor = vec4(col, R*0.4);
+	else FragColor = vec4(FillColor, R);
 }
+
+-- VisualizeObs
+
+out vec4 FragColor;
+uniform sampler2D Sampler;
+uniform vec3 FillColor;
+uniform vec2 Scale;
+
+void main()
+{
+    float L = texture(Sampler, gl_FragCoord.xy * Scale).r;
+    FragColor = vec4(FillColor, L);
+}
+

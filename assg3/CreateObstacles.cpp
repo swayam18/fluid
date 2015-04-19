@@ -2,6 +2,18 @@
 #include <math.h>
 #include <stdio.h>
 
+
+float gradient(float m, float p, float c, float x) {
+	float dyc = 0.0;
+	if (x < p*c) { 
+		dyc = 2 *(m / (p*p)) *( p - x/c);
+	}
+	else {
+		dyc = (2 * m / (1 - p*p)) * (p -x/c);
+	}
+	return dyc;
+}
+
 float thickness(float x, float t, float c) {
 	float yt = 5 * t * c *(
 		 0.2969 * sqrtf(x / c) +
@@ -12,10 +24,109 @@ float thickness(float x, float t, float c) {
 		);
 	return yt;
 }
+
+float camber(float m, float p, float c, float x)  {
+	float yc = 0.0;
+	if (x < p*c) { 
+		yc = m * (x / (p*p)) *(2 * p - x/c);
+	}
+	else {
+		yc = m * (c - x) / ((1 - p) * (1-p)) * (1 + x / c - 2 * p);
+	}
+	return yc;
+}
+
+void getAssymetricAirfoil(float* positions, const int slices, int width, int height) {
+	// NACA 4412 
+	//float m = 0.04;
+	//float p = 0.4;
+	//float t = 0.12;
+
+	// NACA 6721
+	float m = 0.06;
+	float p = 0.7;
+	float t = 0.21;
+
+	float c = 0.8;
+	float factor = 1.0f * height / width;
+	float delx = c / ((float)slices);
+	float x = 0.0;
+	float* pPositions = &positions[0];
+	for (int i = 0; i < slices; i++) {
+		float x0 = x;
+		float x1 = x0 + delx;
+		// mayhaps delegate the underneath
+		// to a function?
+		float yt0 = thickness(x0, t, c);
+		float yt1 = thickness(x1, t, c);
+
+		float yc0 = camber(m, p, c, x0);
+		float yc1 = camber(m, p, c, x1);
+
+		float theta0 = atan(gradient(m, p, c, x0));
+		float theta1 = atan(gradient(m, p, c, x1));
+
+		float xu0 = x0 - yt0 * sin(theta0);
+		float xl0 = x0 + yt0 * sin(theta0);
+
+		float yu0 = yc0 + yt0 * cos(theta0) * factor;
+		float yl0 = yc0 - yt0 * cos(theta0) * factor;
+
+		float xu1 = x1 - yt1 * sin(theta1);
+		float xl1 = x1 + yt1 * sin(theta1);
+
+		float yu1 = yc1 + yt1 * cos(theta1) * factor;
+		float yl1 = yc1 - yt1 * cos(theta1) * factor;
+		///triangle 1
+
+		*pPositions++ = yc0;
+		*pPositions++ = x0;
+
+		*pPositions++ = yu0;
+		*pPositions++ = xu0;
+		
+		*pPositions++ = yc1;
+		*pPositions++ = x1;
+
+		//triangle 2
+		*pPositions++ = yc1;
+		*pPositions++ = x1;
+
+		*pPositions++ = yu1;
+		*pPositions++ = xu1;
+
+		*pPositions++ = yu0;
+		*pPositions++ = xu0;
+
+		//triangle 3
+		*pPositions++ = yc0;
+		*pPositions++ = x0;
+
+		*pPositions++ = yl0;
+		*pPositions++ = xl0;
+		
+		*pPositions++ = yc1;
+		*pPositions++ = x1;
+
+		//triangle 4
+		*pPositions++ = yc0;
+		*pPositions++ = x1;
+
+		*pPositions++ = yl1;
+		*pPositions++ = xl1;
+
+		*pPositions++ = yl0;
+		*pPositions++ = xl0;
+
+		x = x1;
+	}
+}
+
 void getAirfoilVeritcal(float* positions, const int slices, int width, int height) {
 	// number of slices determines the number of trapezoids to produces...
-	float t = 0.30;
-	float c = 1.0;
+	float t = 0.20;
+	float c = 1.0 * 0.80;
+	float factor = 1.0f * height / width;
 	float delx = c / ((float)slices);
 	float x = 0.0;
 	float* pPositions = &positions[0];
@@ -23,8 +134,8 @@ void getAirfoilVeritcal(float* positions, const int slices, int width, int heigh
 		float x0 = x;
 		float x1 = x0 + delx;
 
-		float yt0 = thickness(x0, t, c);
-		float yt1 = thickness(x1, t, c);
+		float yt0 = thickness(x0, t, c) * factor ;
+		float yt1 = thickness(x1, t, c) * factor;
 
 		//triangle 1
 		*pPositions++ = 0.0f;
@@ -182,7 +293,7 @@ void CreateObstacles(Surface dest, int width, int height)
     if (DrawCircle) {
         const int slices = 64;
         float positions[slices*2*3*4];
-		getAirfoilVeritcal(positions, slices, width, height);
+		getAssymetricAirfoil(positions, slices, width, height);
         GLuint vbo;
         GLsizeiptr size = sizeof(positions);
         glGenBuffers(1, &vbo);

@@ -33,8 +33,8 @@ static const float ImpulseTemperature = 10.0f;
 static const float ImpulseDensity = 1.0f;
 static const int NumJacobiIterations = 40;
 static float TimeStep = 0.125f;
-static float SmokeBuoyancy = 1.0f;
-static float SmokeWeight = 0.05f;
+static float SmokeBuoyancy = 1.1f;
+static float SmokeWeight = 0.06f;
 static float GradientScale = 1.0f / CellSize;
 static float TemperatureDissipation = 0.99f;
 static float VelocityDissipation = 0.995f;
@@ -57,4 +57,3 @@ void SubtractGradient(Surface velocity, Surface pressure, Surface obstacles, Sur
 void ComputeDivergence(Surface velocity, Surface obstacles, Surface dest);
 void ApplyImpulse(Surface dest, Vector2 position, float value);
 void ApplyBuoyancy(Surface velocity, Surface temperature, Surface density, Surface dest);
-void UpdateSmoke(float f);

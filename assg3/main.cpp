@@ -177,7 +177,7 @@ namespace
 			} else 
 			{
 					ApplyImpulse(Density.Ping, ImpulsePosition, ImpulseDensity,ImpulseDensity,ImpulseDensity);		
-					ApplyImpulse(Velocity.Ping, ImpulsePosition, 0.0,40.0,0.0);
+					ApplyImpulse(Velocity.Ping, ImpulsePosition, 50.0,0.0,0.0);
 			}
 		} else ApplyImpulse(Density.Ping, ImpulsePosition, ImpulseDensity,ImpulseDensity,ImpulseDensity);
 

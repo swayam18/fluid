@@ -22,11 +22,11 @@ typedef struct Vector2_ {
 } Vector2;
 
 #define CellSize (1.25f)
-#define ViewportWidth (800)
+#define ViewportWidth (1400)
 #define ViewportHeight (800)
 #define GridWidth (ViewportWidth / 2)
 #define GridHeight (ViewportHeight / 2)
-#define SplatRadius ((float) 30.0f)
+#define SplatRadius ((float) 50.0f)
 
 static const float AmbientTemperature = 0.0f;
 static const float ImpulseTemperature = 10.0f;
